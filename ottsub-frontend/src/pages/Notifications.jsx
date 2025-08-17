@@ -27,11 +27,11 @@ export default function Notifications() {
       // Make 2 API calls simultaneously
       const [remindersRes, preferencesRes] = await Promise.all([
         // 1. Get reminders (subscriptions expiring in 1 or 3 days)
-        axios.get("http://localhost:5000/api/reminders", {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/reminders`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         // 2. Get user's email notification preference
-        axios.get("http://localhost:5000/api/users/reminder", {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/users/reminder`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -61,7 +61,7 @@ export default function Notifications() {
     try {
       // Send opposite of current state to API
       const response = await axios.put(
-        "http://localhost:5000/api/users/reminder",
+        `${import.meta.env.VITE_API_URL}/api/users/reminder`,
         { remindersEnabled: !emailEnabled }, // Toggle the current state
         { headers: { Authorization: `Bearer ${token}` } }
       );

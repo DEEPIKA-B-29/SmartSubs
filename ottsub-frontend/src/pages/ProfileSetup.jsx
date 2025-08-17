@@ -81,7 +81,7 @@ export default function ProfileSetup() {
     try {
       // First, get existing subscriptions to check for active plans
       const existingRes = await axios.get(
-        "http://localhost:5000/api/subscriptions",
+        `${import.meta.env.VITE_API_URL}/api/subscriptions`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -115,7 +115,7 @@ export default function ProfileSetup() {
       // If validation passed, save each subscription
       for (const o of otts) {
         await axios.post(
-          "http://localhost:5000/api/subscriptions",
+          `${import.meta.env.VITE_API_URL}/api/subscriptions`,
           {
             serviceName: o.service,
             expiryDate: o.expiry,

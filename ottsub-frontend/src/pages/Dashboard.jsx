@@ -18,7 +18,7 @@ export default function Dashboard() {
       }
 
       try {
-        const res = await axios.get("http://localhost:5000/api/subscriptions", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/subscriptions`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOtts(res.data || []);
@@ -47,7 +47,7 @@ export default function Dashboard() {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/subscriptions/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/subscriptions/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOtts((prev) => prev.filter((o) => o._id !== id));
