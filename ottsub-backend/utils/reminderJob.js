@@ -4,7 +4,7 @@ import Subscription from "../models/Subscription.js";
 import sendEmail from "./sendEmail.js";
 
 export default function startReminderJob() {
-  const raw = process.env.REMINDER_DAYS || "3,1"; // Default: 3 and 1 day before
+  const raw = process.env.EXPIRY_REMINDER_DAYS || "4,2"; 
   const DAYS = raw
     .split(",")
     .map((s) => {
@@ -14,7 +14,7 @@ export default function startReminderJob() {
     .filter(Boolean);
 
   if (!DAYS.length) {
-    console.warn("⚠️ No valid REMINDER_DAYS set, skipping reminder job.");
+    console.warn("⚠️ No valid EXPIRY_REMINDER_DAYS set, skipping reminder job.");
     return;
   }
 
@@ -23,7 +23,7 @@ export default function startReminderJob() {
   );
 
   nodeCron.schedule(
-    "25 2 * * *", 
+    "0 8 * * *", 
     async () => {
       const currentTime = new Date().toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
