@@ -23,7 +23,7 @@ export default function startReminderJob() {
   );
 
   nodeCron.schedule(
-    "15 0 * * *", // Every day at 12:15 AM (00:15)
+    "25 2 * * *", 
     async () => {
       const currentTime = new Date().toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
