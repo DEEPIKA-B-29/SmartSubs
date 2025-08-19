@@ -1,10 +1,10 @@
-// utils/reminderJob.js - TESTING VERSION (12:15 AM)
+// utils/reminderJob.js - FIXED VERSION
 import nodeCron from "node-cron";
 import Subscription from "../models/Subscription.js";
 import sendEmail from "./sendEmail.js";
 
 export default function startReminderJob() {
-  const raw = process.env.EXPIRY_REMINDER_DAYS || "4,2"; 
+  const raw = process.env.EXPIRY_REMINDER_DAYS || "3,1";
   const DAYS = raw
     .split(",")
     .map((s) => {
@@ -14,7 +14,9 @@ export default function startReminderJob() {
     .filter(Boolean);
 
   if (!DAYS.length) {
-    console.warn("⚠️ No valid EXPIRY_REMINDER_DAYS set, skipping reminder job.");
+    console.warn(
+      "⚠️ No valid EXPIRY_REMINDER_DAYS set, skipping reminder job."
+    );
     return;
   }
 
@@ -23,7 +25,7 @@ export default function startReminderJob() {
   );
 
   nodeCron.schedule(
-    "0 8 * * *", 
+    "0 11 * * *", // 11:00 AM daily
     async () => {
       const currentTime = new Date().toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
@@ -32,7 +34,7 @@ export default function startReminderJob() {
 
       try {
         const now = new Date();
-        now.setHours(0, 0, 0, 0); // Start of today
+        console.log(`📍 Current datetime: ${now}`);
 
         const maxDays = Math.max(...DAYS);
         const maxDate = new Date(
@@ -60,13 +62,18 @@ export default function startReminderJob() {
           }
 
           const expiryDate = new Date(sub.expiryDate);
-          expiryDate.setHours(0, 0, 0, 0);
 
           const diffTime = expiryDate - now;
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+          console.log(`📊 ${sub.serviceName} for ${sub.userId.email}:`);
+          console.log(`   Expiry: ${expiryDate.toDateString()}`);
+          console.log(`   Current: ${now.toDateString()}`);
+          console.log(`   Days left: ${diffDays}`);
           console.log(
-            `📊 ${sub.serviceName} for ${sub.userId.email}: ${diffDays} days left`
+            `   Will send email? ${
+              DAYS.includes(diffDays) ? "✅ YES" : "❌ NO"
+            }`
           );
 
           // Send email only for specified reminder days
@@ -101,10 +108,6 @@ export default function startReminderJob() {
                 err.message
               );
             }
-          } else {
-            console.log(
-              `📅 Not a reminder day for ${sub.serviceName} (${diffDays} days left)`
-            );
           }
         }
 
@@ -116,10 +119,10 @@ export default function startReminderJob() {
       }
     },
     {
-      timezone: "Asia/Kolkata", // IST timezone
+      timezone: "Asia/Kolkata",
       scheduled: true,
     }
   );
 
-  console.log("✅ Reminder job scheduled (daily at 12:15 AM IST)");
+  console.log("✅ Reminder job scheduled (daily at 11:00 AM IST)");
 }
